@@ -9,15 +9,59 @@ import { Card, Badge, Btn, EmptyState } from '../components/atoms';
 import { TopBar } from '../components/layout';
 
 // ── Forex Factory calendar endpoints ─────────────────────────────────────────
-// Primary: direct JSON (works in most regions)
-// Fallback: CORS proxy
-const FF_ENDPOINTS = [
+const FF_URLS = [
   'https://nfs.faireconomy.media/ff_calendar_thisweek.json',
   'https://nfs.faireconomy.media/ff_calendar_nextweek.json',
 ];
-const CORS_PREFIX = 'https://corsproxy.io/?';
 
-// ── Currency pairs of interest (filter) ──────────────────────────────────────
+// Multiple CORS proxies — tried in order until one works
+const CORS_PROXIES = [
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://cors-anywhere.herokuapp.com/${url}`,
+];
+
+// In production (Vercel) direct fetch is always blocked — go straight to proxies
+const IS_PROD = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+async function tryFetch(url) {
+  const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error('Not an array');
+  return data;
+}
+
+async function fetchFFCalendar() {
+  const results = [];
+
+  for (const ffUrl of FF_URLS) {
+    let fetched = false;
+
+    // In dev: try direct first
+    if (!IS_PROD) {
+      try {
+        const data = await tryFetch(ffUrl);
+        results.push(...data);
+        fetched = true;
+      } catch {}
+    }
+
+    // Try each proxy in order
+    if (!fetched) {
+      for (const proxy of CORS_PROXIES) {
+        try {
+          const data = await tryFetch(proxy(ffUrl));
+          results.push(...data);
+          fetched = true;
+          break; // proxy worked, no need to try others
+        } catch {}
+      }
+    }
+  }
+
+  return results;
+}
 const ALL_CURRENCIES = ['ALL','USD','EUR','GBP','JPY','AUD','CAD','CHF','NZD','CNY','XAU'];
 const IMPACT_COLORS  = {
   'High':    { bg:'rgba(244,63,94,.12)',   border:'rgba(244,63,94,.3)',   color:'#fb7185',  dot:'#f43f5e' },
@@ -96,17 +140,11 @@ const NewsPage = () => {
   const [filterImpact, setFilterImpact] = useState(['High','Medium','Low','Holiday']);
   const [selectedEvent,setSelectedEvent]= useState(null);
 
-  const load = useCallback(async (useProxy = false) => {
+  const load = useCallback(async () => {
     setLoading(true); setError('');
     try {
-      let data = await fetchFFCalendar(useProxy);
-      if (!data.length && !useProxy) {
-        console.log('[News] Direct fetch empty — trying CORS proxy…');
-        data = await fetchFFCalendar(true);
-      }
-      if (!data.length) throw new Error('No calendar data returned. This may be a weekend or the service is temporarily unavailable.');
-
-      // Sort by date ascending
+      const data = await fetchFFCalendar();
+      if (!data.length) throw new Error('No calendar data returned. The Forex Factory service may be temporarily unavailable — try again in a few minutes.');
       data.sort((a, b) => new Date(a.date) - new Date(b.date));
       setEvents(data);
       setLastUpdated(new Date());
@@ -208,8 +246,8 @@ const NewsPage = () => {
             <p style={{ fontSize:12, color:'var(--rose)', fontFamily:'var(--fm)', display:'flex', alignItems:'flex-start', gap:8 }}>
               <AlertTriangle size={14} style={{ flexShrink:0, marginTop:1 }}/>{error}
             </p>
-            <Btn variant="ghost" size="sm" onClick={() => load(true)} style={{ marginTop:10 }}>
-              <RefreshCw size={11}/> Try with CORS proxy
+            <Btn variant="ghost" size="sm" onClick={() => load()} style={{ marginTop:10 }}>
+              <RefreshCw size={11}/> Try Again
             </Btn>
           </div>
         )}
