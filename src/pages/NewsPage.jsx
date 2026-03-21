@@ -93,21 +93,6 @@ function isPast(isoStr) {
   return new Date(isoStr) < new Date();
 }
 
-// ── Fetch from FF (with CORS fallback) ───────────────────────────────────────
-async function fetchFFCalendar(useProxy = false) {
-  const results = [];
-  for (const url of FF_ENDPOINTS) {
-    const fetchUrl = useProxy ? `${CORS_PREFIX}${encodeURIComponent(url)}` : url;
-    try {
-      const res  = await fetch(fetchUrl, { signal: AbortSignal.timeout(12000) });
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (Array.isArray(data)) results.push(...data);
-    } catch {}
-  }
-  return results;
-}
-
 // ── Impact bullet ─────────────────────────────────────────────────────────────
 const ImpactDot = ({ impact }) => {
   const c = IMPACT_COLORS[impact] || IMPACT_COLORS.Low;
