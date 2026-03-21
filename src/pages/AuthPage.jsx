@@ -88,8 +88,8 @@ const AuthPage = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg)', overflow: 'hidden' }}>
 
-      {/* ── Left — branding ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 80px', position: 'relative' }}>
+      {/* ── Left — branding (hidden on mobile) ── */}
+      <div className="auth-left" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 80px', position: 'relative' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 30% 50%, rgba(99,102,241,.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
@@ -113,8 +113,8 @@ const AuthPage = () => {
         </div>
       </div>
 
-      {/* ── Right — form ── */}
-      <div style={{ width: 460, background: 'var(--surface)', borderLeft: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 48px' }}>
+      {/* ── Right — form (full width on mobile) ── */}
+      <div className="auth-right" style={{ width: 460, background: 'var(--surface)', borderLeft: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 48px' }}>
         <div style={{ width: '100%' }} className="fade-up">
           <h2 style={{ fontFamily: 'var(--fh)', fontSize: 22, fontWeight: 700, marginBottom: 4 }}>
             {mode === 'login' ? 'Welcome back' : 'Create account'}

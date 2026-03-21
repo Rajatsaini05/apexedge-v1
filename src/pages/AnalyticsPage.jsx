@@ -151,7 +151,7 @@ const AnalyticsPage = ({ trades, setPage }) => {
       <div style={{ flex:1, overflowY:'auto', padding:20 }}>
 
         {/* ── Headline stats ── */}
-        <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:16 }}>
+        <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:12, marginBottom:16 }}>
           <StatCard label="Consistency" value={score} sub={score>=70?'Consistent':score>=45?'Developing':'Needs Work'}
             icon={Target} accent={scoreColor} glow trend={score}/>
           <StatCard label="Best Win Streak"  value={`${strk.maxW} trades`}
@@ -167,9 +167,7 @@ const AnalyticsPage = ({ trades, setPage }) => {
         </div>
 
         {/* ── Cumulative PnL + By Pair ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
-          <Card style={{ padding:16 }}>
-            <p style={{ fontSize:11, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'.7px', fontFamily:'var(--fm)', marginBottom:16 }}>Cumulative P&L by Trade</p>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:12, marginBottom:12 }}>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={cumPnl} margin={{ top:4,right:4,bottom:0,left:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,.04)"/>

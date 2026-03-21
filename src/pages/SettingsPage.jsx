@@ -234,7 +234,7 @@ const SettingsPage = ({ user, onClearAll }) => (
   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
     <TopBar title="Settings" subtitle="All changes save directly to your account" />
     <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxWidth: 840 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16, maxWidth: 840 }}>
         <ProfileCard  user={user} />
         <RiskCard     user={user} />
         <PasswordCard />

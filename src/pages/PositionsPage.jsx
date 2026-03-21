@@ -115,7 +115,7 @@ const PositionsPage = ({ trades, setTrades, addTrade, setPage }) => {
       />
 
       {/* Quick stats strip */}
-      <div style={{ padding: '10px 20px', background: 'var(--surface)', borderBottom: '1px solid var(--line)', display: 'flex', gap: 24, fontSize: 12, fontFamily: 'var(--fm)' }}>
+      <div style={{ padding: '10px 16px', background: 'var(--surface)', borderBottom: '1px solid var(--line)', display: 'flex', gap: 16, fontSize: 12, fontFamily: 'var(--fm)', overflowX: 'auto', flexShrink: 0 }}>
         {[
           ['Net P&L',  `$${stats.net?.toFixed(2)}`,  stats.net  >= 0 ? 'var(--emerald)' : 'var(--rose)'],
           ['Win Rate', `${stats.winRate}%`,           stats.winRate >= 50 ? 'var(--emerald)' : 'var(--rose)'],
@@ -140,7 +140,8 @@ const PositionsPage = ({ trades, setTrades, addTrade, setPage }) => {
       </div>
 
       {/* Table */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
+        <div style={{ minWidth: 700 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
             <tr>
@@ -193,6 +194,7 @@ const PositionsPage = ({ trades, setTrades, addTrade, setPage }) => {
           </tbody>
         </table>
         {filtered.length === 0 && <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)', fontFamily: 'var(--fm)', fontSize: 12 }}>No trades match this filter.</div>}
+        </div>{/* end minWidth wrapper */}
       </div>
 
       {/* Detail strip */}

@@ -35,7 +35,7 @@ const JournalPage = ({ trades, setTrades, setPage }) => {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <TopBar title="Journal" subtitle={`${closed.filter(t => t.notes).length} / ${closed.length} documented`} tradeCount={closed.length} />
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 260px', overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', overflow: 'hidden' }}>
         <div style={{ overflowY: 'auto', padding: 20 }}>
           <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
             {['all', 'noted', 'unnoted'].map(f => (

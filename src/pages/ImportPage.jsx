@@ -304,7 +304,7 @@ const ImportPage = ({ onImport }) => {
               <p style={{ fontSize:11,color:'var(--muted)',textTransform:'uppercase',letterSpacing:'.7px',fontFamily:'var(--fm)',marginBottom:14 }}>
                 No CSV? Download a demo file to test
               </p>
-              <div style={{ display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10 }}>
+              <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))',gap:10 }}>
                 {Object.entries(DEMO_CSVS).map(([key,d]) => (
                   <div key={key} style={{ display:'flex',flexDirection:'column',gap:8 }}>
                     <div style={{ background:'var(--card2)',border:'1px solid var(--line)',borderRadius:8,padding:'10px 14px' }}>
@@ -339,7 +339,7 @@ const ImportPage = ({ onImport }) => {
 
             {/* Mapping display */}
             {mapping && (
-              <div style={{ display:'grid',gridTemplateColumns:'360px 1fr',gap:16 }}>
+              <div style={{ display:'grid',gridTemplateColumns:'minmax(0, 360px) minmax(0, 1fr)',gap:16 }}>
                 <Card style={{ padding:18 }}>
                   <p style={{ fontSize:11,color:'var(--muted)',textTransform:'uppercase',letterSpacing:'.7px',fontFamily:'var(--fm)',marginBottom:14 }}>Detected Column Mapping</p>
                   {[

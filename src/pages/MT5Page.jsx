@@ -91,7 +91,7 @@ const ConnectForm = ({ onConnect, savedCreds, onForget }) => {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '400px 1fr', gap: 20, alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, alignItems: 'start' }}>
       <Card style={{ padding: 24 }}>
 
         {/* Saved account banner */}
@@ -388,7 +388,7 @@ const MT5Page = ({ onImport }) => {
             )}
 
             {/* Account stat cards */}
-            <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 16 }}>
+            <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 16 }}>
               <StatCard label="Balance"      value={`$${parseFloat(account?.balance || 0).toFixed(2)}`}     icon={Database}      accent="sky" />
               <StatCard label="Equity"       value={`$${parseFloat(account?.equity  || 0).toFixed(2)}`}     icon={Activity}      accent={parseFloat(account?.equity || 0) >= parseFloat(account?.balance || 0) ? 'emerald' : 'rose'} />
               <StatCard label="Free Margin"  value={`$${parseFloat(account?.freeMargin || 0).toFixed(2)}`}  icon={Shield}        accent="indigo" />
@@ -399,7 +399,7 @@ const MT5Page = ({ onImport }) => {
 
             {/* Account details */}
             <Card style={{ padding: 18, marginBottom: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 8 }}>
                 {[
                   ['Broker',   account?.broker],
                   ['Platform', account?.platform],

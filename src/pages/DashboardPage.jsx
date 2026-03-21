@@ -66,7 +66,7 @@ const DashboardPage = ({ trades, setPage }) => {
       <div style={{ flex:1, overflowY:'auto', padding:20 }}>
 
         {/* ── Stat row ── */}
-        <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:16 }}>
+        <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:12, marginBottom:16 }}>
           <StatCard label="Total Trades"  value={stats.total}
             sub={`${stats.wins}W / ${stats.losses}L`}
             icon={Activity} accent="indigo" glow trend={stats.winRate} />
@@ -87,7 +87,7 @@ const DashboardPage = ({ trades, setPage }) => {
         </div>
 
         {/* ── Equity curve + pie ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:12, marginBottom:12 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) min(300px,100%)', gap:12, marginBottom:12 }}>
           <Card style={{ padding:16 }}>
             <p style={{ fontSize:11, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'.7px', fontFamily:'var(--fm)', marginBottom:16 }}>
               Equity Curve
@@ -141,7 +141,7 @@ const DashboardPage = ({ trades, setPage }) => {
         </div>
 
         {/* ── Daily P&L bar + recent trades ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 280px', gap:12, marginBottom:12 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) min(280px,100%)', gap:12, marginBottom:12 }}>
           <Card style={{ padding:16 }}>
             <p style={{ fontSize:11, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'.7px', fontFamily:'var(--fm)', marginBottom:16 }}>
               Daily P&L

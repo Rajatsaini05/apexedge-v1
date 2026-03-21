@@ -160,7 +160,7 @@ const PlansPage = () => {
         </div>
 
         {/* Plan cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, maxWidth: 960, margin: '0 auto', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 960, margin: '0 auto', alignItems: 'start' }}>
           {PLANS.map(plan => (
             <PlanCard key={plan.id} plan={plan} currentPlan={currentPlan} onUpgrade={handleUpgrade} />
           ))}

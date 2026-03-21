@@ -132,7 +132,11 @@ function InnerApp() {
   return (
     <div style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
       <Sidebar page={page} setPage={setPage} user={userObj} onLogout={signOut} notifications={0} />
-      <main style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg)' }}>
+      <main style={{
+        flex:1, display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg)',
+        // On mobile, add padding at bottom for the fixed bottom nav bar
+        paddingBottom: 'var(--bottom-nav-height, 0)',
+      }}>
 
         {/* One-time loading screen — only shown on initial data fetch */}
         {tradesLoading && !tradesTimedOut && (
