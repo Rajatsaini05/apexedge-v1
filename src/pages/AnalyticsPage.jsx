@@ -168,6 +168,8 @@ const AnalyticsPage = ({ trades, setPage }) => {
 
         {/* ── Cumulative PnL + By Pair ── */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:12, marginBottom:12 }}>
+          <Card style={{ padding:16 }}>
+            <p style={{ fontSize:11, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'.7px', fontFamily:'var(--fm)', marginBottom:12 }}>Cumulative P&L</p>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={cumPnl} margin={{ top:4,right:4,bottom:0,left:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,.04)"/>
