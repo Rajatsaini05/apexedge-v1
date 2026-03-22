@@ -58,7 +58,7 @@ function InnerApp() {
   const {
     trades, loading: tradesLoading, error: tradesError,
     importTrades, updateTrade, addTrade,
-    clearAllTrades, setTrades,
+    clearAllTrades, deleteTrade, setTrades,
   } = useTrades();
   const { toast } = useToast();
   const [page, setPage] = useState('dashboard');
@@ -118,7 +118,7 @@ function InnerApp() {
   const PAGE_LIST = [
     { id:'dashboard', el:<DashboardPage trades={trades}  setPage={setPage} /> },
     { id:'chart',     el:<ChartPage     trades={trades}  setPage={setPage} /> },
-    { id:'trades',    el:<PositionsPage trades={trades}  setTrades={handleSetTrades} addTrade={addTrade} setPage={setPage} /> },
+    { id:'trades',    el:<PositionsPage trades={trades} setTrades={handleSetTrades} addTrade={addTrade} deleteTrade={deleteTrade} updateTrade={updateTrade} setPage={setPage} /> },
     { id:'analytics', el:<AnalyticsPage trades={trades}  setPage={setPage} /> },
     { id:'journal',   el:<JournalPage   trades={trades}  setTrades={handleSetTrades} setPage={setPage} /> },
     { id:'ai',        el:<AIPage        trades={trades} /> },
