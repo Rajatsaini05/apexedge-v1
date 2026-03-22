@@ -150,38 +150,37 @@ const ImportPage = ({ onImport }) => {
     setCsvText(clean);
     setFileName(name);
     setDetectErr('');
-    setMapping(null);
     setParsedTrades([]);
+    setStep(2);
 
     const pv = previewCSV(clean);
     setPreview(pv);
-    setStep(2);
 
-    // Run AI detection if key is set, otherwise auto-detect
+    // ALWAYS run auto-detect first so mapping + trades are available immediately
+    const auto = autoDetectMapping(pv.headers);
+    setMapping(auto);
+    setAiExplain('Auto-detected from column names');
+    runParse(clean, auto);
+
+    // Then try AI on top of it if key is set (improves accuracy but not required)
     if (apiKey.trim()) {
       runAIDetect(clean, pv, apiKey.trim());
-    } else {
-      const auto = autoDetectMapping(pv.headers);
-      setMapping(auto);
-      setAiExplain('Auto-detected (no Claude API key set — add one below for better accuracy)');
-      runParse(clean, auto);
     }
   }, [apiKey]);
 
-  // ── AI detect ─────────────────────────────────────────────────────────────
+  // ── AI detect (enhances auto-detect, doesn't block it) ───────────────────
   const runAIDetect = useCallback(async (text, pv, key) => {
     setDetecting(true); setDetectErr('');
     try {
       const m = await detectMappingWithAI(pv.headers, pv.rows, key);
       setMapping(m);
-      setAiExplain(m.explanation || 'AI mapping complete');
+      setAiExplain(m.explanation || '✓ AI mapping complete');
       sessionStorage.setItem('apexedge_claude_key', key);
       runParse(text, m);
     } catch (e) {
-      setDetectErr(`AI detect failed: ${e.message}. Falling back to auto-detect.`);
-      const auto = autoDetectMapping(pv.headers);
-      setMapping(auto);
-      runParse(text, auto);
+      // AI failed — auto-detect is already set, just show a warning
+      setDetectErr(`AI detect failed (${e.message}) — using auto-detect instead. You can still import.`);
+      // mapping + parsedTrades already set from auto-detect in loadCSV, don't clear them
     } finally {
       setDetecting(false);
     }
@@ -326,18 +325,27 @@ const ImportPage = ({ onImport }) => {
         {step===2 && (
           <div>
             {/* AI status */}
-            <Card style={{ padding:16, marginBottom:16 }}>
-              <div style={{ display:'flex',alignItems:'center',gap:12 }}>
+            <Card style={{ padding:14, marginBottom:16 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                 {detecting
-                  ? <><div className="spin" style={{ width:20,height:20,border:'2px solid var(--line)',borderTopColor:'var(--indigo)',borderRadius:'50%'}}/><span style={{ fontSize:13,color:'var(--sub)',fontFamily:'var(--fm)' }}>Claude is analysing your CSV headers and rows…</span></>
-                  : <><Brain size={18} color={mapping?'var(--emerald)':'var(--indigo)'}/><span style={{ fontSize:13,color:'var(--text)' }}>{aiExplain || 'Detecting columns…'}</span></>
+                  ? <><div className="spin" style={{ width:18,height:18,border:'2px solid var(--line)',borderTopColor:'var(--indigo)',borderRadius:'50%'}}/><span style={{ fontSize:12,color:'var(--sub)',fontFamily:'var(--fm)' }}>Claude is analysing your CSV…</span></>
+                  : <><Brain size={16} color={apiKey?'var(--indigo)':'var(--emerald)'}/><span style={{ fontSize:13,color:'var(--text)' }}>{aiExplain || 'Ready'}</span></>
                 }
-                {!detecting && mapping && <Badge color="emerald">✓ Mapping ready</Badge>}
+                {!detecting && mapping && (
+                  <Badge color={apiKey && !detectErr ? 'indigo' : 'emerald'}>
+                    {apiKey && !detectErr ? '✓ AI Mapped' : '✓ Auto-detected'}
+                  </Badge>
+                )}
               </div>
-              {detectErr && <p style={{ fontSize:11,color:'var(--amber)',fontFamily:'var(--fm)',marginTop:8 }}>{detectErr}</p>}
+              {detectErr && <p style={{ fontSize:11, color:'var(--amber)', fontFamily:'var(--fm)', marginTop:8, lineHeight:1.5 }}>{detectErr}</p>}
+              {!apiKey && !detecting && (
+                <p style={{ fontSize:11, color:'var(--muted)', fontFamily:'var(--fm)', marginTop:6 }}>
+                  No Claude key — using auto-detection. Works for standard broker formats. Add a key on step 1 for better accuracy on unusual formats.
+                </p>
+              )}
             </Card>
 
-            {/* Mapping display */}
+            {/* Mapping display — always shown once mapping exists */}
             {mapping && (
               <div style={{ display:'grid',gridTemplateColumns:'minmax(0, 360px) minmax(0, 1fr)',gap:16 }}>
                 <Card style={{ padding:18 }}>
@@ -364,13 +372,27 @@ const ImportPage = ({ onImport }) => {
                     </div>
                   ))}
 
-                  <div style={{ marginTop:16,display:'flex',gap:8 }}>
+                  <div style={{ marginTop:16, display:'flex', gap:8, flexWrap:'wrap' }}>
                     <Btn variant="ghost" size="sm" onClick={()=>{setStep(1);setMapping(null);}}>← Back</Btn>
-                    {parsedTrades.length > 0 && (
-                      <Btn size="sm" onClick={()=>setStep(3)}>
-                        Preview {parsedTrades.length} trades →
-                      </Btn>
-                    )}
+                    {parsedTrades.length > 0
+                      ? (
+                        <Btn size="sm" onClick={()=>setStep(3)}>
+                          Preview {parsedTrades.length} trades →
+                        </Btn>
+                      ) : !detecting && (
+                        <div style={{ flex:1 }}>
+                          <div style={{ padding:'10px 12px', background:'rgba(245,158,11,.08)', border:'1px solid rgba(245,158,11,.2)', borderRadius:7, marginBottom:8 }}>
+                            <p style={{ fontSize:11, color:'var(--amber)', fontFamily:'var(--fm)', lineHeight:1.6 }}>
+                              ⚠ No trades detected with current mapping. Try adjusting the column selectors below, or check that your CSV has closed trades with both entry and exit prices.
+                            </p>
+                          </div>
+                          <Btn variant="ghost" size="sm" onClick={()=>{
+                            // Force re-parse so user can see if manual column edits help
+                            runParse(csvText, mapping);
+                          }}>↻ Re-parse with current mapping</Btn>
+                        </div>
+                      )
+                    }
                   </div>
 
                   {/* Re-detect with AI */}

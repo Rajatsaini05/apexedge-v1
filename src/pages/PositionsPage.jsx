@@ -100,8 +100,62 @@ const PositionsPage = ({ trades, setTrades, addTrade, setPage }) => {
 
   if (!trades.length) return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <TopBar title="Positions" subtitle="All trades · sorted · filterable" />
-      <EmptyState icon={List} title="No positions yet" desc="Import your trade history or add entries manually." cta="Import CSV" onCta={() => setPage('import')} />
+      <TopBar
+        title="Positions"
+        subtitle="All trades · sorted · filterable"
+        actions={<Btn size="sm" onClick={() => { setShowAdd(true); setAddErr(''); }}><Plus size={13} />Add Trade</Btn>}
+      />
+      <EmptyState
+        icon={List}
+        title="No positions yet"
+        desc="Import your trade history from a CSV, or add trades manually using the button above."
+        cta="Import CSV"
+        onCta={() => setPage('import')}
+      />
+
+      {/* Add manual trade modal — available even when list is empty */}
+      {showAdd && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Card className="fade-up" style={{ width: 500, padding: 24, maxWidth: '95vw' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ fontFamily: 'var(--fh)', fontSize: 16, fontWeight: 700 }}>Manual Trade Entry</h3>
+              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer' }}><X size={16} /></button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              {[['Pair', 'pair', 'text', 'XAU/USD'], ['Entry Price', 'entryPrice', 'number', ''], ['Exit Price', 'exitPrice', 'number', 'Optional'], ['Lot Size', 'lots', 'number', '0.10']].map(([l, k, type, ph]) => (
+                <div key={k}>
+                  <label style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', display: 'block', marginBottom: 5, fontFamily: 'var(--fm)' }}>{l}</label>
+                  <input value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} type={type} placeholder={ph} step="any" />
+                </div>
+              ))}
+              <div>
+                <label style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', display: 'block', marginBottom: 5, fontFamily: 'var(--fm)' }}>Direction</label>
+                <select value={form.side} onChange={e => setForm(f => ({ ...f, side: e.target.value }))}><option value="buy">Buy (Long)</option><option value="sell">Sell (Short)</option></select>
+              </div>
+              <div>
+                <label style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', display: 'block', marginBottom: 5, fontFamily: 'var(--fm)' }}>Entry Date</label>
+                <input type="datetime-local" value={form.entryDate} onChange={e => setForm(f => ({ ...f, entryDate: e.target.value }))} />
+              </div>
+              <div>
+                <label style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', display: 'block', marginBottom: 5, fontFamily: 'var(--fm)' }}>Exit Date</label>
+                <input type="datetime-local" value={form.exitDate} onChange={e => setForm(f => ({ ...f, exitDate: e.target.value }))} />
+              </div>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <label style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', display: 'block', marginBottom: 5, fontFamily: 'var(--fm)' }}>Notes (optional)</label>
+              <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} placeholder="Trade reasoning…" style={{ resize: 'vertical', fontSize: 12 }} />
+            </div>
+            {addErr && <p style={{ color: 'var(--rose)', fontSize: 12, fontFamily: 'var(--fm)', marginTop: 10 }}>{addErr}</p>}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 18 }}>
+              <Btn variant="ghost" size="sm" onClick={() => setShowAdd(false)}>Cancel</Btn>
+              <Btn size="sm" onClick={handleAddManual} disabled={addBusy}>
+                {addBusy ? <div className="spin" style={{ width: 12, height: 12, border: '2px solid rgba(255,255,255,.3)', borderTopColor: '#fff', borderRadius: '50%' }} /> : <Check size={13} />}
+                Add & Save Trade
+              </Btn>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 
